@@ -1,60 +1,102 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerInteractor : MonoBehaviour
 {
     [SerializeField] private GameObject interactionButton;
+    [SerializeField] private PlayerAnimation playerAnimation;
 
+    private CharacterController controller;
     private IInteractable currentInteractable;
 
-    private void Start()
+    private void Awake()
     {
-        HideInteraction();
+        controller = GetComponent<CharacterController>();
+
+        if (playerAnimation == null)
+        {
+            playerAnimation = GetComponent<PlayerAnimation>();
+        }
+
+        ShowButton(false);
+    }
+
+    private void Update()
+    {
+        ShowButton(CanUseCurrent());
+    }
+
+    private bool CanUseCurrent()
+    {
+        if (!isActiveAndEnabled || currentInteractable == null)
+        {
+            return false;
+        }
+
+        // Tránh gọi vào object đã bị hủy hoặc bị tắt.
+        if (currentInteractable is MonoBehaviour source)
+        {
+            if (source == null || !source.isActiveAndEnabled)
+            {
+                return false;
+            }
+        }
+
+        // Bản này chỉ cho tương tác khi đang đứng trên mặt đỡ.
+        return controller.isGrounded && currentInteractable.CanInteract;
     }
 
     public void SetInteractable(IInteractable interactable)
     {
-        if (interactable == null || !interactable.CanInteract)
+        if (!isActiveAndEnabled)
         {
             return;
         }
 
         currentInteractable = interactable;
-        interactionButton.SetActive(true);
+        ShowButton(CanUseCurrent());
     }
 
     public void ClearInteractable(IInteractable interactable)
     {
-        if (currentInteractable != interactable)
+        if (!ReferenceEquals(currentInteractable, interactable))
         {
             return;
         }
 
-        HideInteraction();
+        currentInteractable = null;
+        ShowButton(false);
     }
 
     public void Interact()
     {
-        if (currentInteractable == null ||
-            !currentInteractable.CanInteract)
+        if (!CanUseCurrent())
         {
             return;
         }
 
         currentInteractable.Interact();
 
-        if (!currentInteractable.CanInteract)
+        if (playerAnimation != null)
         {
-            HideInteraction();
+            playerAnimation.PlayInteract();
         }
+
+        ShowButton(CanUseCurrent());
     }
 
-    private void HideInteraction()
+    private void OnDisable()
     {
         currentInteractable = null;
+        ShowButton(false);
+    }
 
-        if (interactionButton != null)
+    private void ShowButton(bool visible)
+    {
+        if (interactionButton != null &&
+            interactionButton.activeSelf != visible)
         {
-            interactionButton.SetActive(false);
+            interactionButton.SetActive(visible);
         }
     }
 }
