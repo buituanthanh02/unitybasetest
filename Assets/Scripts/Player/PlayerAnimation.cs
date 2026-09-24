@@ -5,8 +5,12 @@ public class PlayerAnimation : MonoBehaviour
 {
     [SerializeField] private Animator animator;
 
+    [Header("Idle")]
+    [SerializeField, Min(0f)] private float relaxDelay = 3f;
+
     private CharacterController controller;
     private Vector3 previousPosition;
+    private float idleTimer;
     private bool hasFinished;
 
     private static readonly int Moving =
@@ -14,6 +18,9 @@ public class PlayerAnimation : MonoBehaviour
 
     private static readonly int Grounded =
         Animator.StringToHash("Grounded");
+
+    private static readonly int Relaxed =
+        Animator.StringToHash("Relaxed");
 
     private static readonly int Dead =
         Animator.StringToHash("Dead");
@@ -47,14 +54,52 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
-        // Chỉ xét chuyển động ngang để phân biệt Idle và Run.
+        // Đọc tốc độ ngang thực tế của Player.
         displacement.y = 0f;
 
         float horizontalSpeed =
             displacement.magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
 
-        animator.SetBool(Moving, horizontalSpeed > 0.1f);
-        animator.SetBool(Grounded, controller.isGrounded);
+        bool moving = horizontalSpeed > 0.1f;
+        bool grounded = controller.isGrounded;
+
+        animator.SetBool(Moving, moving);
+        animator.SetBool(Grounded, grounded);
+
+        // Chỉ đếm thời gian nghỉ khi đứng yên trên mặt đất
+        // và không đang thực hiện động tác tương tác.
+        if (moving || !grounded || IsInteracting())
+        {
+            idleTimer = 0f;
+        }
+        else
+        {
+            idleTimer += Time.deltaTime;
+        }
+
+        animator.SetBool(Relaxed, idleTimer >= relaxDelay);
+    }
+
+    private bool IsInteracting()
+    {
+        AnimatorStateInfo currentState =
+            animator.GetCurrentAnimatorStateInfo(0);
+
+        if (currentState.IsName("Base Layer.Interact"))
+        {
+            return true;
+        }
+
+        // Tính cả khoảng thời gian đang chuyển vào Interact.
+        if (animator.IsInTransition(0))
+        {
+            AnimatorStateInfo nextState =
+                animator.GetNextAnimatorStateInfo(0);
+
+            return nextState.IsName("Base Layer.Interact");
+        }
+
+        return false;
     }
 
     public void PlayInteract()
@@ -64,11 +109,26 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
+        idleTimer = 0f;
+        animator.SetBool(Relaxed, false);
+
+        // Không xếp thêm lần phát khi đang chạy động tác này.
+        if (IsInteracting())
+        {
+            return;
+        }
+
+        animator.ResetTrigger(Interact);
         animator.SetTrigger(Interact);
     }
 
     public void PlayDeath()
     {
+        if (hasFinished)
+        {
+            return;
+        }
+
         hasFinished = true;
 
         if (!CanAnimate)
@@ -78,11 +138,17 @@ public class PlayerAnimation : MonoBehaviour
 
         animator.ResetTrigger(Interact);
         animator.SetBool(Moving, false);
+        animator.SetBool(Relaxed, false);
         animator.SetBool(Dead, true);
     }
 
     public void PlayWin()
     {
+        if (hasFinished)
+        {
+            return;
+        }
+
         hasFinished = true;
 
         if (!CanAnimate)
@@ -93,8 +159,14 @@ public class PlayerAnimation : MonoBehaviour
         animator.ResetTrigger(Interact);
         animator.SetBool(Moving, false);
         animator.SetBool(Grounded, true);
+        animator.SetBool(Relaxed, true);
+        animator.SetBool(Dead, false);
 
-        // Khi thắng, dừng ở Idle kể cả đang nhảy/tương tác.
-        animator.CrossFadeInFixedTime("Base Layer.Idle", 0.1f);
+        // Khi thắng, chuyển về tư thế nghỉ.
+        animator.CrossFadeInFixedTime(
+            "Base Layer.RelaxedIdle",
+            0.1f,
+            0
+        );
     }
 }
