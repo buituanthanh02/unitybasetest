@@ -227,7 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6cd47704a9847d4e8e6edb4d60e3aa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 195748786}
+  relaxDelay: 3
 --- !u!1 &40676942 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8053783637443826072, guid: c9ff998d776f1b94a813fe3430f3e997, type: 3}
@@ -735,6 +736,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 23.21
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 8d7ed06403ff019428616295fdfa283e, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 9742d8787e047fe47893c2efd8dd478f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -743,6 +748,11 @@ PrefabInstance:
 --- !u!4 &195748785 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8d7ed06403ff019428616295fdfa283e, type: 3}
+  m_PrefabInstance: {fileID: 195748784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &195748786 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 8d7ed06403ff019428616295fdfa283e, type: 3}
   m_PrefabInstance: {fileID: 195748784}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &198867723 stripped

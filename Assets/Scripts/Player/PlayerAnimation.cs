@@ -13,6 +13,7 @@ public class PlayerAnimation : MonoBehaviour
     private float idleTimer;
     private bool hasFinished;
 
+    // Tên Parameters trong Animator.
     private static readonly int Moving =
         Animator.StringToHash("Moving");
 
@@ -27,6 +28,10 @@ public class PlayerAnimation : MonoBehaviour
 
     private static readonly int Interact =
         Animator.StringToHash("Interact");
+
+    // Tên States theo cách bạn đặt.
+    private const string InteractionState = "Base Layer.ButtonPushing";
+    private const string RestingState = "Base Layer.Last-Idle";
 
     private bool CanAnimate =>
         animator != null &&
@@ -54,7 +59,7 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
-        // Đọc tốc độ ngang thực tế của Player.
+        // Chỉ tính chuyển động ngang, bỏ qua chuyển động lên xuống.
         displacement.y = 0f;
 
         float horizontalSpeed =
@@ -66,8 +71,8 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(Moving, moving);
         animator.SetBool(Grounded, grounded);
 
-        // Chỉ đếm thời gian nghỉ khi đứng yên trên mặt đất
-        // và không đang thực hiện động tác tương tác.
+        // Đếm thời gian nghỉ khi đứng yên trên đất,
+        // không đang thực hiện động tác bấm nút.
         if (moving || !grounded || IsInteracting())
         {
             idleTimer = 0f;
@@ -85,18 +90,18 @@ public class PlayerAnimation : MonoBehaviour
         AnimatorStateInfo currentState =
             animator.GetCurrentAnimatorStateInfo(0);
 
-        if (currentState.IsName("Base Layer.Interact"))
+        if (currentState.IsName(InteractionState))
         {
             return true;
         }
 
-        // Tính cả khoảng thời gian đang chuyển vào Interact.
+        // Tính cả lúc đang chuyển vào ButtonPushing.
         if (animator.IsInTransition(0))
         {
             AnimatorStateInfo nextState =
                 animator.GetNextAnimatorStateInfo(0);
 
-            return nextState.IsName("Base Layer.Interact");
+            return nextState.IsName(InteractionState);
         }
 
         return false;
@@ -112,7 +117,7 @@ public class PlayerAnimation : MonoBehaviour
         idleTimer = 0f;
         animator.SetBool(Relaxed, false);
 
-        // Không xếp thêm lần phát khi đang chạy động tác này.
+        // Không kích hoạt lại khi đang thực hiện động tác.
         if (IsInteracting())
         {
             return;
@@ -162,11 +167,7 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(Relaxed, true);
         animator.SetBool(Dead, false);
 
-        // Khi thắng, chuyển về tư thế nghỉ.
-        animator.CrossFadeInFixedTime(
-            "Base Layer.RelaxedIdle",
-            0.1f,
-            0
-        );
+        // Khi thắng, chuyển về Last-Idle.
+        animator.CrossFadeInFixedTime(RestingState, 0.15f, 0);
     }
 }
