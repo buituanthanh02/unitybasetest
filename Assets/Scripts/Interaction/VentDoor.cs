@@ -12,6 +12,9 @@ public class VentDoor : MonoBehaviour, IInteractable
     [SerializeField] private DoorPart[] doorParts;
     [SerializeField] private float openSpeed = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource openAudio;
+
     private Vector3[] openLocalPositions;
     private bool isOpen;
 
@@ -66,5 +69,10 @@ public class VentDoor : MonoBehaviour, IInteractable
         }
 
         isOpen = true;
+
+        if (openAudio != null)
+        {
+            openAudio.Play();
+        }
     }
 }

@@ -14,10 +14,11 @@ public class LevelGameFlow : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject winPanel;
 
+    [Header("Scene Loading")]
+    [SerializeField] private SceneLoader sceneLoader;
+
     public CharacterController Player => player;
     public bool HasEnded { get; private set; }
-
-    private bool isReloading;
 
     private void Awake()
     {
@@ -50,7 +51,6 @@ public class LevelGameFlow : MonoBehaviour
 
     private void FinishLevel(bool won)
     {
-        // Không cho kết thúc nhiều lần hoặc vừa thua vừa thắng.
         if (HasEnded)
         {
             return;
@@ -94,25 +94,31 @@ public class LevelGameFlow : MonoBehaviour
 
     public void ResetLevel()
     {
-        if (isReloading)
-        {
-            return;
-        }
-
-        int buildIndex = SceneManager.GetActiveScene().buildIndex;
-
-        if (buildIndex < 0)
+        if (sceneLoader == null)
         {
             Debug.LogError(
-                "Hãy thêm scene Gameplay vào File > Build Settings.",
+                "LevelGameFlow chưa được gán Scene Loader.",
                 this
             );
             return;
         }
 
-        isReloading = true;
-        Time.timeScale = 1f;
+        sceneLoader.LoadScene(
+            SceneManager.GetActiveScene().name
+        );
+    }
 
-        SceneManager.LoadSceneAsync(buildIndex);
+    public void ReturnToMainMenu()
+    {
+        if (sceneLoader == null)
+        {
+            Debug.LogError(
+                "LevelGameFlow chưa được gán Scene Loader.",
+                this
+            );
+            return;
+        }
+
+        sceneLoader.LoadScene("MainMenu");
     }
 }

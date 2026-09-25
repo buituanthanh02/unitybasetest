@@ -10,6 +10,9 @@ public class PlatformDeployer : MonoBehaviour, IInteractable
 
     [SerializeField] private float deploySpeed = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource deployAudio;
+
     private Vector3[] deployedPositions;
     private bool isActivated;
 
@@ -63,5 +66,10 @@ public class PlatformDeployer : MonoBehaviour, IInteractable
         }
 
         isActivated = true;
+
+        if (deployAudio != null)
+        {
+            deployAudio.Play();
+        }
     }
 }
