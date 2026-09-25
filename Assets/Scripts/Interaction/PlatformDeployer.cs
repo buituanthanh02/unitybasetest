@@ -13,6 +13,9 @@ public class PlatformDeployer : MonoBehaviour, IInteractable
     [Header("Audio")]
     [SerializeField] private AudioSource deployAudio;
 
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem activationVFX;
+
     private Vector3[] deployedPositions;
     private bool isActivated;
 
@@ -68,8 +71,13 @@ public class PlatformDeployer : MonoBehaviour, IInteractable
         isActivated = true;
 
         if (deployAudio != null)
-        {
+        { 
             deployAudio.Play();
+        }
+
+        if (activationVFX != null)
+        {
+            activationVFX.Play();
         }
     }
 }

@@ -15,6 +15,10 @@ public class VentDoor : MonoBehaviour, IInteractable
     [Header("Audio")]
     [SerializeField] private AudioSource openAudio;
 
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem[] openVFXs =
+        new ParticleSystem[0];
+
     private Vector3[] openLocalPositions;
     private bool isOpen;
 
@@ -73,6 +77,14 @@ public class VentDoor : MonoBehaviour, IInteractable
         if (openAudio != null)
         {
             openAudio.Play();
+        }
+
+        foreach (ParticleSystem effect in openVFXs)
+        {
+            if (effect != null)
+            {
+                effect.Play();
+            }
         }
     }
 }
