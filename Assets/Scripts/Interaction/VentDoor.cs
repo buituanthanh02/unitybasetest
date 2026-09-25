@@ -31,60 +31,43 @@ public class VentDoor : MonoBehaviour, IInteractable
         for (int i = 0; i < doorParts.Length; i++)
         {
             if (doorParts[i].movingPart == null)
-            {
                 continue;
-            }
-
-            openLocalPositions[i] =
-                doorParts[i].movingPart.localPosition
-                + doorParts[i].openOffset;
+            
+            openLocalPositions[i] = doorParts[i].movingPart.localPosition + doorParts[i].openOffset;
         }
     }
 
     private void Update()
     {
         if (!isOpen)
-        {
             return;
-        }
-
+        
         for (int i = 0; i < doorParts.Length; i++)
         {
             Transform movingPart = doorParts[i].movingPart;
 
             if (movingPart == null)
-            {
-                continue;
-            }
-
-            movingPart.localPosition = Vector3.MoveTowards(
-                movingPart.localPosition,
-                openLocalPositions[i],
-                openSpeed * Time.deltaTime
-            );
+               continue;
+            movingPart.localPosition = Vector3.MoveTowards(movingPart.localPosition, openLocalPositions[i], openSpeed * Time.deltaTime);
         }
     }
 
     public void Interact()
     {
         if (isOpen)
-        {
             return;
-        }
+        
 
         isOpen = true;
 
         if (openAudio != null)
-        {
             openAudio.Play();
-        }
+        
 
         foreach (ParticleSystem effect in openVFXs)
         {
             if (effect != null)
-            {
                 effect.Play();
-            }
         }
     }
 }

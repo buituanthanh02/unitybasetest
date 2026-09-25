@@ -37,28 +37,30 @@ public class PauseMenu : MonoBehaviour
 
     private void Start()
     {
-        if (levelGameFlow == null || sceneLoader == null ||
-            playerInteractor == null || pausePanel == null)
-            Debug.LogError("PauseMenu: kiểm tra Level Game Flow, Scene Loader, " +
-                "Player Interactor và Pause Panel.", this);
+        if (levelGameFlow == null || sceneLoader == null || playerInteractor == null || pausePanel == null)
+            Debug.LogError("PauseMenu: kiểm tra Level Game Flow, Scene Loader, " + "Player Interactor và Pause Panel.", this);
     }
 
     private void Update()
     {
         if (IsBlocked)
         {
-            if (IsPaused) CloseForEndOrLoading();
+            if (IsPaused) 
+                CloseForEndOrLoading();
             return;
         }
-        if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        if (!Input.GetKeyDown(KeyCode.Escape)) 
+            return;
 
         if (audioSettings != null && audioSettings.IsOpen)
         {
             audioSettings.Close();
             return;
         }
-        if (pausePanel == null || pausePanel.IsAnimating) return;
-        if (IsPaused) Resume();
+        if (pausePanel == null || pausePanel.IsAnimating) 
+            return;
+        if (IsPaused) 
+            Resume();
         else Pause();
     }
 
@@ -101,7 +103,8 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        if (!IsPaused || IsBlocked || resumeRoutine != null) return;
+        if (!IsPaused || IsBlocked || resumeRoutine != null) 
+            return;
         if (audioSettings != null && audioSettings.IsOpen)
         {
             audioSettings.Close();

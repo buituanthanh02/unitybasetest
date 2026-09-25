@@ -13,30 +13,16 @@ public class PlayerAnimation : MonoBehaviour
     private float idleTimer;
     private bool hasFinished;
 
-    // Tên Parameters trong Animator.
-    private static readonly int Moving =
-        Animator.StringToHash("Moving");
+    private static readonly int Moving = Animator.StringToHash("Moving");
+    private static readonly int Grounded = Animator.StringToHash("Grounded");
+    private static readonly int Relaxed = Animator.StringToHash("Relaxed");
+    private static readonly int Dead = Animator.StringToHash("Dead");
+    private static readonly int Interact = Animator.StringToHash("Interact");
 
-    private static readonly int Grounded =
-        Animator.StringToHash("Grounded");
-
-    private static readonly int Relaxed =
-        Animator.StringToHash("Relaxed");
-
-    private static readonly int Dead =
-        Animator.StringToHash("Dead");
-
-    private static readonly int Interact =
-        Animator.StringToHash("Interact");
-
-    // Tên States theo cách bạn đặt.
     private const string InteractionState = "Base Layer.ButtonPushing";
     private const string RestingState = "Base Layer.Last-Idle";
 
-    private bool CanAnimate =>
-        animator != null &&
-        animator.isActiveAndEnabled &&
-        animator.runtimeAnimatorController != null;
+    private bool CanAnimate => animator != null && animator.isActiveAndEnabled && animator.runtimeAnimatorController != null;
 
     private void Awake()
     {
@@ -44,9 +30,7 @@ public class PlayerAnimation : MonoBehaviour
         previousPosition = transform.position;
 
         if (animator == null)
-        {
             animator = GetComponentInChildren<Animator>();
-        }
     }
 
     private void LateUpdate()
@@ -59,11 +43,9 @@ public class PlayerAnimation : MonoBehaviour
             return;
         }
 
-        // Chỉ tính chuyển động ngang, bỏ qua chuyển động lên xuống.
         displacement.y = 0f;
 
-        float horizontalSpeed =
-            displacement.magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
+        float horizontalSpeed = displacement.magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
 
         bool moving = horizontalSpeed > 0.1f;
         bool grounded = controller.isGrounded;
@@ -71,57 +53,37 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(Moving, moving);
         animator.SetBool(Grounded, grounded);
 
-        // Đếm thời gian nghỉ khi đứng yên trên đất,
-        // không đang thực hiện động tác bấm nút.
         if (moving || !grounded || IsInteracting())
-        {
             idleTimer = 0f;
-        }
         else
-        {
             idleTimer += Time.deltaTime;
-        }
 
         animator.SetBool(Relaxed, idleTimer >= relaxDelay);
     }
 
     private bool IsInteracting()
     {
-        AnimatorStateInfo currentState =
-            animator.GetCurrentAnimatorStateInfo(0);
-
+        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName(InteractionState))
-        {
             return true;
-        }
 
-        // Tính cả lúc đang chuyển vào ButtonPushing.
         if (animator.IsInTransition(0))
         {
-            AnimatorStateInfo nextState =
-                animator.GetNextAnimatorStateInfo(0);
-
+            AnimatorStateInfo nextState = animator.GetNextAnimatorStateInfo(0);
             return nextState.IsName(InteractionState);
         }
-
         return false;
     }
 
     public void PlayInteract()
     {
         if (hasFinished || !CanAnimate)
-        {
             return;
-        }
 
         idleTimer = 0f;
         animator.SetBool(Relaxed, false);
-
-        // Không kích hoạt lại khi đang thực hiện động tác.
         if (IsInteracting())
-        {
             return;
-        }
 
         animator.ResetTrigger(Interact);
         animator.SetTrigger(Interact);
@@ -130,16 +92,11 @@ public class PlayerAnimation : MonoBehaviour
     public void PlayDeath()
     {
         if (hasFinished)
-        {
             return;
-        }
 
         hasFinished = true;
-
         if (!CanAnimate)
-        {
             return;
-        }
 
         animator.ResetTrigger(Interact);
         animator.SetBool(Moving, false);
@@ -150,16 +107,12 @@ public class PlayerAnimation : MonoBehaviour
     public void PlayWin()
     {
         if (hasFinished)
-        {
             return;
-        }
 
         hasFinished = true;
 
         if (!CanAnimate)
-        {
             return;
-        }
 
         animator.ResetTrigger(Interact);
         animator.SetBool(Moving, false);
@@ -167,7 +120,6 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(Relaxed, true);
         animator.SetBool(Dead, false);
 
-        // Khi thắng, chuyển về Last-Idle.
         animator.CrossFadeInFixedTime(RestingState, 0.15f, 0);
     }
 }

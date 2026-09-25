@@ -179,10 +179,10 @@ public class SceneLoader : MonoBehaviour
     public void QuitGame()
     {
         if (isLoading) return;
-#if UNITY_EDITOR
-        Debug.Log("Đã bấm Thoát. Trong bản build, ứng dụng sẽ đóng.", this);
-#else
-        Application.Quit();
-#endif
+        #if UNITY_EDITOR
+            Debug.Log("Đã bấm Thoát. Trong bản build, ứng dụng sẽ đóng.", this);
+        #else
+            Application.Quit();
+        #endif
     } 
 }

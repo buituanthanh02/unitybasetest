@@ -26,9 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if (!movementLocked)
-        {
             Move();
-        }
     }
 
     public void SetMovementLocked(bool locked)
@@ -36,9 +34,7 @@ public class PlayerMovement : MonoBehaviour
         movementLocked = locked;
 
         if (locked)
-        {
             verticalVelocity = 0f;
-        }
     }
 
     private void Move()
@@ -46,13 +42,10 @@ public class PlayerMovement : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        Vector3 moveDirection =
-            GetMoveDirection(horizontal, vertical);
+        Vector3 moveDirection = GetMoveDirection(horizontal, vertical);
 
         if (moveDirection.sqrMagnitude > 0.01f)
-        {
             RotateTowards(moveDirection);
-        }
 
         ApplyGravityAndJump();
 
@@ -62,19 +55,10 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(velocity * Time.deltaTime);
     }
 
-    private Vector3 GetMoveDirection(
-        float horizontal,
-        float vertical
-    )
+    private Vector3 GetMoveDirection(float horizontal, float vertical)
     {
         if (cameraTransform == null)
-        {
-            return new Vector3(
-                horizontal,
-                0f,
-                vertical
-            ).normalized;
-        }
+            return new Vector3(horizontal, 0f, vertical).normalized;
 
         Vector3 cameraForward = cameraTransform.forward;
         Vector3 cameraRight = cameraTransform.right;
@@ -85,39 +69,23 @@ public class PlayerMovement : MonoBehaviour
         cameraForward.Normalize();
         cameraRight.Normalize();
 
-        return (
-            cameraForward * vertical +
-            cameraRight * horizontal
-        ).normalized;
+        return (cameraForward * vertical + cameraRight * horizontal).normalized;
     }
 
     private void RotateTowards(Vector3 direction)
     {
-        Quaternion targetRotation =
-            Quaternion.LookRotation(direction);
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
     private void ApplyGravityAndJump()
     {
-        if (characterController.isGrounded &&
-            verticalVelocity < 0f)
-        {
+        if (characterController.isGrounded && verticalVelocity < 0f)
             verticalVelocity = -2f;
-        }
-
+        
         if (characterController.isGrounded &&
             Input.GetButtonDown("Jump"))
-        {
-            verticalVelocity = Mathf.Sqrt(
-                jumpHeight * -2f * gravity
-            );
-        }
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
         verticalVelocity += gravity * Time.deltaTime;
     }

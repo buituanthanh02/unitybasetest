@@ -35,16 +35,11 @@ public class CollapsingPlatform : MonoBehaviour
 
         foreach (Collider currentCollider in colliders)
         {
-            if (currentCollider is BoxCollider boxCollider &&
-                boxCollider.isTrigger)
-            {
+            if (currentCollider is BoxCollider boxCollider && boxCollider.isTrigger)
                 triggerCollider = boxCollider;
-            }
-            else if (!currentCollider.isTrigger &&
-                     solidCollider == null)
-            {
+
+            else if (!currentCollider.isTrigger && solidCollider == null)
                 solidCollider = currentCollider;
-            }
         }
 
         if (triggerCollider == null)
@@ -55,11 +50,7 @@ public class CollapsingPlatform : MonoBehaviour
 
         if (solidCollider == null)
         {
-            Debug.LogError(
-                name + ": Không tìm thấy collider đứng của platform.",
-                this
-            );
-
+            Debug.LogError(name + ": Không tìm thấy collider đứng của platform.", this);
             enabled = false;
         }
     }
@@ -68,21 +59,13 @@ public class CollapsingPlatform : MonoBehaviour
     {
         if (countdownStarted) return;
 
-        CharacterController player =
-            other.GetComponentInParent<CharacterController>();
-
+        CharacterController player = other.GetComponentInParent<CharacterController>();
         if (player == null) return;
 
         countdownStarted = true;
         timer = 0f;
-
         if (warningClip != null)
-        {
-            audioSource.PlayOneShot(
-                warningClip,
-                warningVolume
-            );
-        }
+            audioSource.PlayOneShot(warningClip, warningVolume);
     }
 
     private void Update()
@@ -90,39 +73,25 @@ public class CollapsingPlatform : MonoBehaviour
         if (!countdownStarted) return;
 
         timer += Time.deltaTime;
-
         if (!collapsed && timer >= collapseDelay)
-        {
             Collapse();
-        }
 
         if (!collapsed) return;
 
-        transform.position +=
-            Vector3.down * fallSpeed * Time.deltaTime;
+        transform.position += Vector3.down * fallSpeed * Time.deltaTime;
 
         if (timer >= collapseDelay + hideAfter)
-        {
             gameObject.SetActive(false);
-        }
     }
 
     private void Collapse()
     {
         collapsed = true;
         solidCollider.enabled = false;
-
         if (collapseVFX != null)
-        {
             collapseVFX.Play();
-        }
 
         if (collapseClip != null)
-        {
-            audioSource.PlayOneShot(
-                collapseClip,
-                collapseVolume
-            );
-        }
+            audioSource.PlayOneShot(collapseClip, collapseVolume);
     }
 }
