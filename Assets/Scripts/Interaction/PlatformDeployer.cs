@@ -28,56 +28,37 @@ public class PlatformDeployer : MonoBehaviour, IInteractable
         for (int i = 0; i < platforms.Length; i++)
         {
             if (platforms[i] == null)
-            {
                 continue;
-            }
-
+            
             deployedPositions[i] = platforms[i].position;
-
-            platforms[i].position =
-                deployedPositions[i] + retractedOffset;
+            platforms[i].position = deployedPositions[i] + retractedOffset;
         }
     }
 
     private void Update()
     {
         if (!isActivated)
-        {
             return;
-        }
 
         for (int i = 0; i < platforms.Length; i++)
         {
             if (platforms[i] == null)
-            {
                 continue;
-            }
-
-            platforms[i].position = Vector3.MoveTowards(
-                platforms[i].position,
-                deployedPositions[i],
-                deploySpeed * Time.deltaTime
-            );
+            platforms[i].position = Vector3.MoveTowards(platforms[i].position, deployedPositions[i], deploySpeed * Time.deltaTime);
         }
     }
 
     public void Interact()
     {
         if (isActivated)
-        {
             return;
-        }
 
         isActivated = true;
 
         if (deployAudio != null)
-        { 
             deployAudio.Play();
-        }
 
         if (activationVFX != null)
-        {
             activationVFX.Play();
-        }
     }
 }

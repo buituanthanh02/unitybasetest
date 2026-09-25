@@ -68,12 +68,15 @@ public class LevelGameFlow : MonoBehaviour
     {
         if (resultPanelDelay > 0f)
             yield return new WaitForSecondsRealtime(resultPanelDelay);
-        if (sceneLoader != null && sceneLoader.IsLoading) yield break;
+        if (sceneLoader != null && sceneLoader.IsLoading) 
+            yield break;
 
         GameObject panel = won ? winPanel : gameOverPanel;
-        if (panel == null) yield break;
+        if (panel == null) 
+            yield break;
         PanelFader fader = panel.GetComponent<PanelFader>();
-        if (fader != null) fader.Show();
+        if (fader != null)
+            fader.Show();
         else panel.SetActive(true);
     }
 

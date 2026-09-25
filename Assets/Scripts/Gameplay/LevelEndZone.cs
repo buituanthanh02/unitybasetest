@@ -25,26 +25,16 @@ public class LevelEndZone : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (levelFlow == null || levelFlow.HasEnded)
-        {
             return;
-        }
+        
+        CharacterController enteringPlayer = other.GetComponentInParent<CharacterController>();
 
-        CharacterController enteringPlayer =
-            other.GetComponentInParent<CharacterController>();
-
-        if (enteringPlayer == null ||
-            enteringPlayer != levelFlow.Player)
-        {
+        if (enteringPlayer == null || enteringPlayer != levelFlow.Player)
             return;
-        }
 
         if (result == ZoneResult.Death)
-        {
             levelFlow.Lose();
-        }
         else
-        {
             levelFlow.Win();
-        }
     }
 }

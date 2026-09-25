@@ -11,17 +11,12 @@ public class InteractionZone : MonoBehaviour
         interactable = interactableSource as IInteractable;
 
         if (interactable == null)
-        {
-            Debug.LogError(
-                name + ": Interactable Source không triển khai IInteractable."
-            );
-        }
+            Debug.LogError(name + ": Interactable Source không triển khai IInteractable.");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerInteractor player =
-            other.GetComponentInParent<PlayerInteractor>();
+        PlayerInteractor player = other.GetComponentInParent<PlayerInteractor>();
 
         if (player != null && interactable != null)
         {
@@ -31,12 +26,8 @@ public class InteractionZone : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        PlayerInteractor player =
-            other.GetComponentInParent<PlayerInteractor>();
-
+        PlayerInteractor player = other.GetComponentInParent<PlayerInteractor>();
         if (player != null && interactable != null)
-        {
             player.ClearInteractable(interactable);
-        }
     }
 }

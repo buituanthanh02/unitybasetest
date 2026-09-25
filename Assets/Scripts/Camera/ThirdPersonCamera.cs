@@ -39,10 +39,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private void RotateCamera()
     {
-        bool pointerOverUI =
-            EventSystem.current != null &&
-            EventSystem.current.IsPointerOverGameObject();
-
+        bool pointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         if (Input.GetMouseButton(0) && !pointerOverUI)
         {
             yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -55,47 +52,23 @@ public class ThirdPersonCamera : MonoBehaviour
     private void FollowTarget()
     {
         if (target == null)
-        {
             return;
-        }
-
+        
         Vector3 focusPoint = target.position + Vector3.up * targetHeight;
         Quaternion cameraRotation = Quaternion.Euler(pitch, yaw, 0f);
+        Vector3 directionFromTarget = -(cameraRotation * Vector3.forward);
 
-        Vector3 directionFromTarget =
-            -(cameraRotation * Vector3.forward);
-
-        float currentDistance = GetCollisionDistance(
-            focusPoint,
-            directionFromTarget
-        );
-
-        transform.position =
-            focusPoint + directionFromTarget * currentDistance;
-
+        float currentDistance = GetCollisionDistance(focusPoint, directionFromTarget);
+        transform.position = focusPoint + directionFromTarget * currentDistance;
         transform.rotation = cameraRotation;
     }
 
-    private float GetCollisionDistance(
-        Vector3 focusPoint,
-        Vector3 directionFromTarget
-    )
+    private float GetCollisionDistance(Vector3 focusPoint, Vector3 directionFromTarget)
     {
-        if (Physics.SphereCast(
-            focusPoint,
-            collisionRadius,
-            directionFromTarget,
-            out RaycastHit hit,
-            distance,
-            collisionMask,
-            QueryTriggerInteraction.Ignore))
+        if (Physics.SphereCast(focusPoint, collisionRadius, directionFromTarget, out RaycastHit hit, distance, collisionMask, QueryTriggerInteraction.Ignore))
         {
-            return Mathf.Max(
-                hit.distance - collisionPadding,
-                minimumDistance
-            );
+            return Mathf.Max(hit.distance - collisionPadding, minimumDistance);
         }
-
         return distance;
     }
 }
